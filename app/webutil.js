@@ -371,6 +371,61 @@ WebUtil.releaseCapture = function () {
     }
 };
 
+// Seperate elements that outline the form of a target element
+
+WebUtil.createSilhouette = function (target) {
+    var targetForm = target.getBoundingClientRect();
+    var targetStyle = window.getComputedStyle(target);
+
+    var silhouette = document.createElement("div");
+    silhouette.id = target.id + "_silhouette";
+    silhouette.style.borderRadius = targetStyle.borderRadius;
+    silhouette.style.width = targetForm.width + "px";
+    silhouette.style.height = targetForm.height + "px";
+
+    // Two colors to make it easier to see no matter the background
+    silhouette.style.boxShadow = "0 4px 5px white, 0 -4px 5px skyblue";
+
+    silhouette.style.transform = "rotate(180deg)";
+    silhouette.style.position = "fixed";
+
+    document.body.appendChild(silhouette);
+
+    return silhouette;
+};
+
+WebUtil.getSilhouette = function (targetId) {
+    return document.getElementById(targetId + "_silhouette");
+};
+
+WebUtil.updateSilhouette = function (target, alignSide) {
+    var silhouette = WebUtil.getSilhouette(target.id);
+
+    if (silhouette === null) return;
+
+    var form = target.getBoundingClientRect();
+
+    if (alignSide === 'right') {
+        silhouette.style.right = form.left + "px";
+        silhouette.style.left = "auto";
+    } else if (alignSide === 'left') {
+        silhouette.style.left = window.innerWidth - form.right + "px";
+        silhouette.style.right = "auto";
+    }
+    silhouette.style.top = form.top + "px";
+};
+
+WebUtil.flipSilhouette = function (target) {
+    var silhouette = WebUtil.getSilhouette(target.id);
+
+    if (silhouette === null) return;
+
+    if (silhouette.style.transform === "") {
+        silhouette.style.transform = "rotate(180deg)";
+    } else {
+        silhouette.style.transform = "";
+    }
+};
 
 // Dynamically load scripts without using document.write()
 // Reference: http://unixpapa.com/js/dyna.html
